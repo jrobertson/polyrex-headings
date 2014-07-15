@@ -104,5 +104,33 @@ output:
       </records>
     </entries>
 
+## Example 2
+
+    require 'polyrex-headings'
+
+    s1=&lt;&lt;S
+    &lt;?ph schema="entries[title,tags]/entry[title]/tasks[title]"?&gt;
+    title: Daily tasks outline grouped by morning, afternoon, and evening
+    tags: daily tasks gtd outline 16jul2014
+
+    # morning
+
+    Pump up front tyre
+    Go for a walk
+
+    # afternoon
+
+    Take a 20 min break
+    Reply to email
+
+    # evening
+
+    Read an Arduino tutorial
+    S
+    polyrex = PolyrexHeadings.new(s1).to_polyrex
+    puts polyrex.to_xml pretty: true
+
+
+
 polyrex-headings polyrex parser extension gem
 
