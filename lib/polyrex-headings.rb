@@ -6,9 +6,14 @@ require 'polyrex'
 
 class PolyrexHeadings
 
-  attr_reader :to_polyrex
+  attr_reader :to_polyrex, :to_s
 
   def initialize(raw_s)
+
+    # add an empty space to the blank line where there is no 
+    # raw record between headings
+    
+    raw_s.gsub!(/(#+[^\n]+\n+)(?=\n#)/m,'\1 ')
 
     summary, *s = raw_s.split(/(?=(?:#|[^\n]+\n-+))/,2)
 
@@ -39,7 +44,9 @@ class PolyrexHeadings
 
     end
     summary.sub!(/^(<\?)(ph|polyrex-headings)/,'\1polyrex')
-    @to_polyrex = Polyrex.new.parse(summary + a.join)
+    @to_s = string = summary + a.join
+
+    @to_polyrex = Polyrex.new.parse(string)
   end
 
   private
