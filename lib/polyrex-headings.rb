@@ -15,6 +15,7 @@ class PolyrexHeadings
     
     raw_s.gsub!(/(#+[^\n]+\n+)(?=\n#)/m,'\1 ')
     summary, *s = raw_s.split(/(?=(?:^#|[\n]+\n-+))/,2)
+    type = nil
 
     a = if raw_s =~ /----/ then       
     
@@ -33,29 +34,31 @@ class PolyrexHeadings
       end
 
     else
+      
+      a2 = summary.gsub(/\n{2,}/,"\n").lines
 
+      if a2.last =~ /^--+/ then
+        a2.pop
+        summary = a2.join
+        type = :rowx 
+      end
+        
       s.join.split(/^\n*#/)[1..-1].map do |x|  
         
-
         lines = x.lines
-
         raw_heading = lines.shift.rstrip        
 
-        a2 = summary.gsub(/\n{2,}/,"\n").lines
-
-        if a2.last =~ /^--+/ then
-
-          a2.pop
-          summary = a2.join
-
-          lines = ["\n"] + RowX.new(lines.join, level: 0).to_lines(delimiter: ' # ')
-          
+        if type == :rowx
+          lines2 = ["\n"] + 
+              RowX.new(lines.join, level: 0).to_lines(delimiter: ' # ') << "\n"
+        else
+          lines2 = lines
         end
 
         raw_indent = raw_heading.slice!(/#*/)
         n, heading = raw_indent.length, raw_heading.lstrip
 
-        ([indent(n) + heading] + lines.map{|x| indent(n+1) + x}).join        
+        ([indent(n) + heading] + lines2.map{|x| indent(n+1) + x}).join        
       end
 
     end
