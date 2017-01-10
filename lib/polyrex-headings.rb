@@ -47,11 +47,15 @@ class PolyrexHeadings
         
         lines = x.lines
         raw_heading = lines.shift.rstrip        
+        
+        body = lines.join.strip
 
-        if type == :rowx
+        if type == :rowx and body.length > 0
+
           lines2 = ["\n"] + 
-              RowX.new(lines.join, level: 0).to_lines(delimiter: ' # ') << "\n"
+              RowX.new(body, level: 0).to_lines(delimiter: ' # ') << "\n"
         else
+
           lines2 = lines
         end
 
