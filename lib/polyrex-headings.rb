@@ -4,17 +4,26 @@
 
 require 'polyrex'
 
+class PolyrexHeadingsException < Exception
+end
+
 class PolyrexHeadings
 
-  attr_reader :to_polyrex, :to_s
+  attr_reader :to_polyrex, :to_px, :to_s
 
   def initialize(raw_s)
+    
+    buffer, type = RXFHelper.read(raw_s)
+    
+    if type == :unknown and buffer.lines.length <= 1 then
+      raise PolyrexHeadingsException, 'File not found' 
+    end    
 
     # add an empty space to the blank line where there is no 
     # raw record between headings
     
-    raw_s.gsub!(/(#+[^\n]+\n+)(?=\n#)/m,'\1 ')
-    summary, *s = raw_s.split(/(?=(?:^#|[\n]+\n-+))/,2)
+    buffer.gsub!(/(#+[^\n]+\n+)(?=\n#)/m,'\1 ')
+    summary, *s = buffer.split(/(?=(?:^#|[\n]+\n-+))/,2)
     type = nil
 
     a = if raw_s =~ /----/ then       
@@ -66,13 +75,15 @@ class PolyrexHeadings
       end
 
     end
+
     summary.sub!(/^(<\?)(ph|polyrex-headings)/,'\1polyrex')
     @to_s = string = summary + a.join
     
     px = Polyrex.new
+
     px.parse(string, delimiter: ' # ')
     
-    @to_polyrex = px
+    @to_polyrex = @to_px = px
 
   end
 

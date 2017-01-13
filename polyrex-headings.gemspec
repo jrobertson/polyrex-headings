@@ -1,10 +1,10 @@
 Gem::Specification.new do |s|
   s.name = 'polyrex-headings'
-  s.version = '0.1.8'
-  s.summary = 'polyrex-headings'
+  s.version = '0.1.9'
+  s.summary = 'Parses a raw Polyrex document containing Markdown style headings'
   s.authors = ['James Robertson']
-  s.files = Dir['lib/**/*.rb']
-  s.add_runtime_dependency('polyrex', '~> 1.0', '>=1.0.1') 
+  s.files = Dir['lib/polyrex-headings.rb']
+  s.add_runtime_dependency('polyrex', '~> 1.1', '>=1.1.11') 
   s.signing_key = '../privatekeys/polyrex-headings.pem'
   s.cert_chain  = ['gem-public_cert.pem']
   s.license = 'MIT'
