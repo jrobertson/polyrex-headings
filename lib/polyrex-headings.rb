@@ -11,8 +11,9 @@ class PolyrexHeadings
 
   attr_reader :to_polyrex, :to_px, :to_s
 
-  def initialize(raw_s)
+  def initialize(raw_s, debug: false)
     
+    @debug = debug
     buffer, type = RXFHelper.read(raw_s)
     
     if type == :unknown and buffer.lines.length <= 1 then
@@ -83,11 +84,49 @@ class PolyrexHeadings
 
     px.parse(string, delimiter: ' # ')
     
-    @to_polyrex = @to_px = px
+    @to_polyrex = @to_px = @px = px
 
   end
-
+  
+  def to_h(symbolise: true)
+    build(@px.records, symbolise)
+  end
+  
   private
+  
+  def build(records, symbolise)
+
+    a = records.map do |record|
+
+      if @debug then
+        puts 'record.records: ' + record.records.inspect
+        puts 'record.x: ' + record.x.inspect
+      end
+      
+      if record.records.any? then
+
+        key = symbolise ? record.x.downcase.to_sym : record.x
+        {key => build(record.records, symbolise)}
+
+      elsif record.x =~ /^[^:]+:\s/ then
+        raw_key, value = record.x.split(/:\s+/,2)
+        key = symbolise ? raw_key.downcase.to_sym : raw_key
+        {key => value}
+
+      else
+
+        record.x
+
+      end
+
+    end
+
+    puts 'a.first: ' + a.first.inspect if @debug
+    return a.inject({}) {|r,x| r.merge!(x)} if a.first.is_a? Hash
+
+    a      
+
+  end
 
   def indent(n)
     '  ' * (n)
